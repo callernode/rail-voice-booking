@@ -1,0 +1,27 @@
+# Pushes this repo to a Hugging Face Space on every push to main, so the Space always runs the latest code.
+# Setup (once): GitHub repo → Settings → Secrets and variables → Actions:
+#   Secret   HF_TOKEN   = a Hugging Face token with WRITE access
+#   Variable HF_SPACE   = owner/space-name, e.g. callernode/rail-sahayak  (create the Space first: SDK = Docker)
+name: Deploy to Hugging Face Space
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+      - name: Push to Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE: ${{ vars.HF_SPACE }}
+        run: |
+          if [ -z "$HF_TOKEN" ] || [ -z "$HF_SPACE" ]; then
+            echo "::warning::HF_TOKEN secret or HF_SPACE variable not set - skipping deploy."; exit 0
+          fi
+          HF_USER="${HF_SPACE%%/*}"
+          git push --force "https://${HF_USER}:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE}" HEAD:main
