@@ -1,0 +1,17 @@
+# /etc/systemd/system/rail-sahayak.service
+# Replace SITE_USER, DOMAIN and APP_PORT (the App Port you chose in CloudPanel, e.g. 8090).
+[Unit]
+Description=Rail Sahayak voice booking app
+After=network.target
+
+[Service]
+User=SITE_USER
+Group=SITE_USER
+WorkingDirectory=/home/SITE_USER/htdocs/DOMAIN
+EnvironmentFile=/home/SITE_USER/rail-sahayak.env
+ExecStart=/home/SITE_USER/htdocs/DOMAIN/venv/bin/uvicorn app:app --host 127.0.0.1 --port APP_PORT --workers 1 --proxy-headers --forwarded-allow-ips 127.0.0.1
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

@@ -84,3 +84,10 @@ Microphone needs HTTPS or `localhost`. `tests/e2e_check.py` runs a scripted 8-tu
 
 **Privacy:** the database holds names, ages and phone numbers. Keep the HF dataset private, keep `ADMIN_KEY`
 secret, and tell users the details are only used to book their ticket.
+
+## Deploy on your own server with CloudPanel
+Ready-made files are in `deploy/cloudpanel/` (systemd service, Nginx block, env template, update script).
+In short: create a **Python site** (pick an App Port, e.g. 8090) and issue a Let's Encrypt certificate →
+clone this repo into the site's `htdocs/<domain>` as the site user → `python3 -m venv venv && venv/bin/pip install -r requirements.txt`
+→ fill `rail-sahayak.env` → install the systemd service → replace the Vhost's `location /` block with
+`nginx-location.conf`. HTTPS is required for the microphone to work.
